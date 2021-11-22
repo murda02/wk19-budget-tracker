@@ -16,7 +16,7 @@ const config = {
   
         name: 'Budget-Tracker',
         short_name: 'BT',
-        description: 'An app that keeps track of your budget online, as well as offline',
+        description: 'An app that tracks your budget offline',
         background_color: '#113e52',
         theme_color: '#c3e8f7',
         start_url: '/',
