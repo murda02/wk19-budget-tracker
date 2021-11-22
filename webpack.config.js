@@ -13,7 +13,6 @@ const config = {
         filename: 'manifest.json',
         inject: false,
         fingerprints: false,
-  
         name: 'Budget-Tracker',
         short_name: 'BT',
         description: 'An app that tracks your budget offline',
