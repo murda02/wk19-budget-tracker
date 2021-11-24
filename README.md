@@ -33,7 +33,7 @@ After navigating to the web page in a Safari browser, tap the share button, scro
 
 **Android**:
 
-After navigating to the web page in a Google Chome browser, tap the three-dot overflow menu in the top-right corner and then select ‘Add to home screen.’ Chrome will prompt you to enter a name for the app before adding it to your home screen.
+After navigating to the web page in a Google Chome browser, tap the three-dot overflow menu in the top-right corner and then select `Add to home screen`. Chrome will prompt you to enter a name for the app before adding it to your home screen.
 
 ## Usage
 
