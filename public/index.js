@@ -1,5 +1,74 @@
 let transactions = [];
 let myChart;
+let db;
+let budgetVersion;
+
+// Create a new db request for a "budget" database.
+const request = indexedDB.open('BudgetDB', budgetVersion || 35);
+
+request.onupgradeneeded = function (e) {
+  const { oldVersion } = e;
+  const newVersion = e.newVersion || db.version;
+  console.log(`DB Updated from version ${oldVersion} to ${newVersion}`);
+  db = e.target.result;
+  if (db.objectStoreNames.length === 0) {
+    db.createObjectStore('BudgetStore', { autoIncrement: true });
+  }
+};
+
+request.onerror = function (e) {
+  console.log(`ERROR!! - ${e.target.errorCode}`);
+};
+
+function checkDatabase() {
+  // open a read/write db transaction, ready for adding the data
+  let transaction = db.transaction(['BudgetStore'], 'readwrite');
+  // create an object store on the transaction
+  const store = transaction.objectStore('BudgetStore');
+  // Get all records from store and set to the 'getAll' variable
+  const getAll = store.getAll();
+
+  // getAll function that obtains all successful requests (tranctaions)
+  getAll.onsuccess = function () {
+    // If there are multiple tranactions, they will get 'bulk' added once back online
+    if (getAll.result.length > 0) {
+      fetch('/api/transaction/bulk', {
+        method: 'POST',
+        body: JSON.stringify(getAll.result),
+        headers: {
+          Accept: 'application/json, text/plain, */*',
+          'Content-Type': 'application/json',
+        },
+      })
+        .then((response) => response.json())
+        .then((res) => {
+          if (res.length !== 0) {
+            // open another read/write db transaction, ready for adding the data
+            transaction = db.transaction(['BudgetStore'], 'readwrite');
+            // create another object store on the bulk transaction
+            const currentStore = transaction.objectStore('BudgetStore');
+            // Make a request to clear all the data out of the currentStore
+            currentStore.clear();
+          }
+        });
+    }
+  };
+}
+
+request.onsuccess = function (e) {
+  db = e.target.result;
+  // If app is online, check the db
+  if (navigator.onLine) {
+    checkDatabase();
+  }
+};
+
+function saveRecord(record) {
+  const transaction = db.transaction(['BudgetStore'], 'readwrite');
+  const store = transaction.objectStore('BudgetStore');
+    // Make a request to add BudgetStore object to the store
+  store.add(record);
+};
 
 fetch("/api/transaction")
   .then(response => {
